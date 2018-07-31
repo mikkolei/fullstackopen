@@ -119,8 +119,7 @@ class App extends React.Component {
         <Error message={this.state.error} />
         <Filter value={this.state.filter} handleFilter={this.handleFilter} />
         <Form addContact={this.addContact} newName={this.state.newName} handleNameChange={this.handleContactNameChange}
-          newNumber={this.state.newNumber} handleNumberChange={this.handleContactNumberChange}
-        />
+          newNumber={this.state.newNumber} handleNumberChange={this.handleContactNumberChange} />
         <h3>Numerot</h3>
           <table>
               <tbody>
