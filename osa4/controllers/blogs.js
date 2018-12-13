@@ -54,30 +54,62 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+
   try {
-    const token = request.token
-    const decodedToken = jwt.verify(token, process.env.SECRET)
+    // const token = request.token
+    // const decodedToken = jwt.verify(token, process.env.SECRET)
 
-    if (!token || !decodedToken.id) {
-      return response.status(401).json({ error: 'token missing or invalid' })
-    }
+    // if (!token || !decodedToken.id) {
+    //   return response.status(401).json({ error: 'token missing or invalid' })
+    // }
+    
+    // console.log(blog.user, decodedToken.id)
 
-    const blog = await Blog.findById(request.params.id)
-    const user = await User.findById(decodedToken.id)
-    const userid = user._id
+    // if (decodedToken.id.toString() !== blog.user.toString()) {
+    //   return response.status(400).json({ error: 'only creator can delete a blog' })
+    // }
 
-    if( blog.user.toString() === userid.toString() ) {
-      await Blog.findByIdAndRemove(blog._id)
-      response.status(204).end()
-    } else {
-      response.status(401).json({ error: 'only the user who created the blog can delete it'})
+    if (blog) {
+      await blog.remove()
     }
     
+    response.status(204).end()
   } catch (exception) {
-    console.log(exception)
-    response.status(400).send({ error: 'malformatted id' })
+    if (exception.name === 'JsonWebTokenError') {
+      response.status(401).json({ error: exception.message })
+    } else {
+      console.log(exception)
+      response.status(500).json({ error: 'something went wrong...' })
+    }
   }
 })
+
+// blogsRouter.delete('/:id', async (request, response) => {
+//   try {
+//     const token = request.token
+//     const decodedToken = jwt.verify(token, process.env.SECRET)
+
+//     if (!token || !decodedToken.id) {
+//       return response.status(401).json({ error: 'token missing or invalid' })
+//     }
+
+//     const blog = await Blog.findById(request.params.id)
+//     const user = await User.findById(decodedToken.id)
+//     const userid = user._id
+
+//     if( blog.user.toString() === userid.toString() ) {
+//       await Blog.findByIdAndRemove(blog._id)
+//       response.status(204).end()
+//     } else {
+//       response.status(401).json({ error: 'only the user who created the blog can delete it'})
+//     }
+    
+//   } catch (exception) {
+//     console.log(exception)
+//     response.status(400).send({ error: 'malformatted id' })
+//   }
+// })
 
 blogsRouter.put('/:id', async (request, response) => {
   try {
